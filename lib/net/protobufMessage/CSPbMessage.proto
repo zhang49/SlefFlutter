@@ -1,0 +1,321 @@
+syntax = "proto3";
+package ZCApp.pb.message.cs;
+ 
+    enum CommDataProtocol
+    {
+        EProtobuf = 0;
+        EJson = 1;
+        ECustom = 2;
+    }
+    //客户端 <-> 服务器
+    enum CSUserRequestMessageType
+    {
+        //用户请求
+		EUserRequestFillField = 0x0;
+        EUserRequest = 0x100000;
+        EUserVerityIdentityRequest = 0x100001;
+        EUserGetPairDevicesRequest = 0x100002;
+        EUserGetPairUserListRequest = 0x100003;
+        EUserMessageToPairDeviceRequest = 0x100004;          //发送消息到设备
+        EUserAddPairDeivceRequest = 0x100005;
+        EUserAddDeivceRequest = 0x100006;
+        EUserDeviceHistoryDataRequest = 0x100007;
+    }
+    enum CSDeviceRequestMessageType
+    {
+        //设备请求
+		EDeviceRequestFillField = 0x0;
+        EDeviceRequest = 0x200000;
+        EDeviceVerityRequest = 0x200001;
+        EDeviceUploadData = 0x200002;                    //上传数据
+        EDeviceMessageToPairUserRequest = 0x200003;            //发送消息到用户
+        EDeviceDataUploadRequest = 0x200004;
+    }
+    enum CSUserReplyMessageType
+    {
+        //用户
+		EUserReplyFillField = 0x0;
+        EUserReply = 0x300000;
+        EUserVerityIdentityReply = 0x300001;
+        EUserGetPairDevicesReply = 0x300002;
+        EUserGetPairClientListReply = 0x300003;
+        EUserMessageToPairDeviceReply = 0x300004;
+        EUserAddDeivceReply = 0x300005;
+        EUserAddPairDeivceReply = 0x300006;
+        EUserDeviceHistoryDataReply = 0x300007;
+        //report 服务器自动推消息
+        EUserPairDeviceStateReport = 0x350000;       //状态变更
+        EUserInformationSyncReport = 0x350001;       //信息同步
+        EUserMessageToPairUserReport = 0x350002;   //服务器接收到MessageToPairUserRequest，生成这个Report转发给用户
+        //设备
+    }
+
+
+    enum CSDeviceReplyMessageType
+    {
+		EDeviceReplyFillField = 0x0;
+        EDeviceReply = 0x400000;
+        EDeviceVerityIdentityReply = 0x400001;
+        EDeviceMessageToPairUserReply = 0x400002;
+        EDeviceDataUploadReply = 0x400003;
+        //report 服务器自动推消息
+        EDeviceMessageToPairDeviceReport = 0x450000;   //服务器接收到MessageToPairDeviceRequest，生成这个Report转发到设备
+    }
+
+    //--------------------------
+
+
+
+    //客户端 <-> 客户端     服务器做中转
+	//二级
+    enum CSCRequestMessageType
+    {
+        //client - server - client
+		EC2CRequestFillField = 0x0;
+        EC2CRequest = 0x100000;
+        EC2CCaptureScreenStartRequest = 0x100001;
+        EC2CCaptureScreenStopRequest = 0x100002;
+        EC2CPcInformationRequest = 0x100003;
+    }
+
+    enum CSCReplyMessageType
+    {
+		EC2CReplyFillField = 0x0;
+        EC2CReply = 0x200000;
+        EC2CGetPairClientListReply = 0x200001;
+        EC2CCaptureScreenStartReply = 0x200002;
+        EC2CCaptureScreenStopReply = 0x200003;
+        EC2CPcInformationReply = 0x200004;
+        //report 自动推消息
+        EC2CMouseReport = 0x250000;
+        EC2CKeyboardReport = 0x250001;
+        EC2CScreenImageBufferReport = 0x250002;
+    }
+	//--------------------------
+
+
+message Request
+{
+uint32 cmdId = 1;
+}
+
+message Reply
+{
+uint32 cmdId = 1;
+int32 code = 2;
+string message = 3;
+}
+
+message Device
+{
+int32 id = 1;
+string name = 2;
+int64 createTime= 3;
+int64 lastLoginTime = 4;
+string data = 5;
+}
+
+message ClientInfo
+{
+int32 userId = 1;
+int32 deviceId = 2;
+string clientChannelId = 3;
+string ipAddress = 4;
+int64 loginTime = 5;
+int32 state = 6;
+}
+
+
+//----Report [ Server -> Client ]
+message MessageToUserDevicePairReport
+{
+int32 sourceId = 1;
+string sourceCtx = 2;
+int32 type = 3;
+int32 length = 4;
+bytes byteArr = 5;
+}
+
+//----User Report
+
+message InformationSyncReport
+{
+int64 lastLoginTime = 1;
+repeated Device pairDevices = 2;
+repeated int32 onlineDeviceIdVec = 3;
+}
+
+message PairDeviceStateReport
+{
+int32 deviceId = 1;
+int32 state = 2;
+}
+//------------------------
+//------------------------
+
+//----Request
+
+//----User Request
+message RegisterRequest
+{
+Request request = 1;
+string account = 2;
+string password = 3;
+string name = 4;
+int64 photo = 5;
+int64 email = 6;
+}
+
+message UserVerityIdentityRequest
+{
+Request request = 1;
+string account = 2;
+string password = 3;
+}
+
+
+message GetPairDevicesRequest
+{
+Request request = 1;
+}
+
+message GetPairClientListRequest
+{
+Request request = 1;
+}
+
+message AddDevicesRequest
+{
+Request request = 1;
+repeated Device device = 2;
+}
+
+message AddPairDeviceRequest
+{
+Request request = 1;
+int32 id = 2;
+string name = 3;
+}
+
+message DeviceHistoryDataRequest
+{
+Request request = 1;
+int32 devId = 2;
+}
+
+message UserMessageToPairDeviceRequest
+{
+Request request = 1;
+int32 destDeviceId = 2;
+int32 type = 3;
+int32 length = 4;
+bytes byteArr = 5;
+}
+
+//------------------------
+//----Deivce Request
+message DeviceMessageToPairUserRequest
+{
+Request request = 1;
+string destUserCtx = 2;
+int32 type = 3;
+int32 length = 4;
+bytes byteArr = 5;
+}
+
+
+message DeviceVerityIdentityRequest
+{
+Request request = 1;
+string name = 2;
+string password = 3;
+}
+
+message DeviceDataUploadRequest
+{
+Request request = 1;
+string data = 2;
+}
+
+//------------------------
+//------------------------
+
+//----Reply
+
+
+//----User Reply
+message RegisterReply
+{
+Reply reply = 1;
+}
+
+
+message UserVerityIdentityReply
+{
+Reply reply = 1;
+int32 userId = 2;
+string name = 3;
+int64 lastLoginTime = 4;
+}
+
+message MessageToPairClientReply
+{
+Reply reply = 1;
+}
+
+
+
+message GetPairDevicesReply
+{
+Reply reply = 1;
+repeated Device device = 2;
+repeated int32 onLineDeviceIdVec = 3;
+}
+
+message AddDevicesReply
+{
+Reply reply = 1;
+repeated int32 deviceId = 2;
+repeated int32 errorCode = 3;
+}
+
+message AddPairDeviceReply
+{
+Reply reply = 1;
+}
+
+message MessageToPairDeviceReply
+{
+Reply reply = 1;
+}
+
+
+message DeviceHistoryDataReply
+{
+Reply reply = 1;
+Device device = 2;
+}
+
+//------------------------
+//----Device Reply
+
+message DeviceVerityIdentityReply
+{
+Reply reply = 1;
+int32 deviceId = 2;
+string name = 3;
+int64 lastLoginTime = 4;
+}
+
+message MessageToPairUserReply
+{
+Reply reply = 1;
+}
+
+message DeviceDataUploadReply
+{
+Reply reply = 1;
+}
+
+//------------------------
+//------------------------

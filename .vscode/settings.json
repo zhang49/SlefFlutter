@@ -1,0 +1,11 @@
+{
+    "dart.analyzerInstrumentationLogFile": null,
+    "dart.debugExternalLibraries": true,
+"dart.debugSdkLibraries": true,
+"dart.enableCompletionCommitCharacters": true,
+"dart.flutterHotRestartOnSave": true,
+"dart.lineLength": 120,
+"dart.previewFlutterUiGuides": true,
+"dart.triggerSignatureHelpAutomatically": true
+
+}

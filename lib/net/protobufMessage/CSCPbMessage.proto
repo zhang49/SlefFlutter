@@ -1,0 +1,69 @@
+﻿syntax = "proto3";
+package ZCApp.pb.message.csc;
+import "CSPbMessage.proto";
+
+//c -> s -> c
+enum CSCRequestMessageType
+{
+ERequestFillField = 0x0;
+ERequest = 0x100000;
+ECaptureScreenStartRequest = 0x100001;
+ECaptureScreenStopRequest = 0x100002;
+EPcInformationRequest = 0x100003;
+}
+
+enum CSCReplyMessageType
+{
+EReplyFillField = 0x0;
+EReply = 0x200000;
+EGetPairClientListReply = 0x200001;
+ECaptureScreenStartReply = 0x200002;
+ECaptureScreenStopReply = 0x200003;
+EPcInformationReply = 0x200004;
+//report 自动推消息
+EMouseReport = 0x250000;
+EKeyboardReport = 0x250001;
+EScreenImageBufferReport = 0x250002;
+}
+
+message CaptureScreenStartRequest
+{
+int32 x = 1;
+int32 y = 2;
+int32 width = 3;
+int32 height = 4;
+int32 quality = 5;
+}
+
+message MouseReport
+{
+int32 x = 1;
+int32 y = 2;
+int32 btn = 3;
+int32 wheelPosition = 4;
+}
+
+message KeyboardReport
+{
+int32 shiftKeyFlags = 1;
+repeated int32 keyCodes = 2;
+}
+
+message ScreenImageBufferReport
+{
+repeated int32 bitMap = 1;
+}
+
+message CaptureScreenStopReply
+{
+ZCApp.pb.message.cs.Reply reply = 1;
+int32 code = 2;
+}
+
+message PcInfoReply
+{
+ZCApp.pb.message.cs.Reply reply = 1;
+string name = 2;
+int32 width = 3;
+int32 height = 4;
+}
